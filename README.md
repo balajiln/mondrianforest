@@ -1,4 +1,71 @@
-mondrianforest
-==============
+This folder contains the scripts used in the following paper:
 
-Code for "Mondrian Forests: Efficient Online Random Forests"
+**Mondrian Forests: Efficient Online Random Forests**
+
+Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh
+
+[http://arxiv.org/abs/1406.2673](http://arxiv.org/abs/1406.2673)
+
+Please cite the above paper if you use this code.
+
+
+
+I ran my experiments using Enthought python (which includes all the necessary python packages).
+If you are running a different version of python, you will need the following python packages 
+(and possibly other packages) to run the scripts:
+
+* numpy
+* scipy
+* matplotlib (for plotting Mondrian partitions)
+* pydot and graphviz (for printing Mondrian trees)
+* sklearn (for reading libsvm format files)
+
+
+The datasets are not included here; you need to download them from the UCI repository. You can run 
+experiments using toy data though. Run **commands.sh** in **process_data** folder for automatically 
+downloading and processing the datasets. I have tested these scripts only on Ubuntu, but it should be straightforward to process datasets in other platforms.
+
+If you have any questions/comments/suggestions, please contact me at 
+[balaji@gatsby.ucl.ac.uk](mailto:balaji@gatsby.ucl.ac.uk).
+
+Code released under MIT license (see COPYING for more info).
+
+Copyright &copy; 2014 Balaji Lakshminarayanan
+
+----------------------------------------------------------------------------
+
+**List of scripts in the src folder**:
+
+- mondrianforest.py
+- mondrianforest_utils.py
+- utils.py
+
+Help on usage can be obtained by typing the following commands on the terminal:
+
+./mondrianforest.py -h
+
+**Example usage**:
+
+./mondrianforest.py --dataset toy-mf --n_mondrians 100 --budget -1 --normalize_features 1
+
+**Examples that draw the Mondrian partition and Mondrian tree**:
+
+./mondrianforest.py --draw_mondrian 1 --save 1 --n_mondrians 10 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo
+./mondrianforest.py --draw_mondrian 1 --save 1 --n_mondrians 1 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo
+
+**Example on a real-world dataset**:
+
+*assuming you have successfully run commands.sh in process_data folder*
+
+./mondrianforest.py --dataset satimage --n_mondrians 100 --budget -1 --normalize_features 1 --save 1 --data_path ../process_data/ --n_minibatches 10 --store_every 1
+
+----------------------------------------------------------------------------
+
+I generated commands for parameter sweeps using 'build_cmds' script by Jan Gasthaus, available publicly at [https://github.com/jgasthaus/Gitsby/tree/master/pbs/python](https://github.com/jgasthaus/Gitsby/tree/master/pbs/python).
+
+Some examples of parameter sweeps are:
+
+./build_cmds ./mondrianforest.py "--op_dir={results}" "--init_id=1:1:6" "--dataset={letter,satimage,usps,dna,dna-61-120}" "--n_mondrians={100}" "--save={1}"  "--discount_factor={10.0}" "--budget={-1}" "--n_minibatches={100}" "--bagging={0}" "--store_every={1}" "--normalize_features={1}" "--data_path={../process_data/}" >> run
+
+Note that the results (predictions, accuracy, log predictive probability on training/test data, runtimes) are stored in the pickle files. 
+You need to write additional scripts to aggregate the results from these pickle files and generate the plots.
