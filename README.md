@@ -51,6 +51,7 @@ Help on usage can be obtained by typing the following commands on the terminal:
 **Examples that draw the Mondrian partition and Mondrian tree**:
 
 ./mondrianforest.py --draw_mondrian 1 --save 1 --n_mondrians 10 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo
+
 ./mondrianforest.py --draw_mondrian 1 --save 1 --n_mondrians 1 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo
 
 **Example on a real-world dataset**:
