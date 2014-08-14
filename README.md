@@ -20,6 +20,9 @@ If you are running a different version of python, you will need the following py
 * pydot and graphviz (for printing Mondrian trees)
 * sklearn (for reading libsvm format files)
 
+Paul Heideman has created requirements.txt, which makes it easy to install the packages using 'pip install -r requirements.txt'.
+Dan Stowell pointed out that dvipng package is required in ubuntu to draw the Mondrians.
+
 
 The datasets are not included here; you need to download them from the UCI repository. You can run 
 experiments using toy data though. Run **commands.sh** in **process_data** folder for automatically 
