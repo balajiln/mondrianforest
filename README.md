@@ -9,9 +9,8 @@ Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh
 Please cite the above paper if you use this code.
 
 
-
 I ran my experiments using Enthought python (which includes all the necessary python packages).
-If you are running a different version of python, you will need the following python packages 
+If you are running a different version of python (e.g. anaconda), you will need the following python packages 
 (and possibly other packages) to run the scripts:
 
 * numpy
@@ -19,6 +18,9 @@ If you are running a different version of python, you will need the following py
 * matplotlib (for plotting Mondrian partitions)
 * pydot and graphviz (for printing Mondrian trees)
 * sklearn (for reading libsvm format files)
+
+Some of the packages (e.g. pydot, matplotlib) are necessary only for '--draw_mondrian 1' option. If you just want to run experiments
+without plotting the Mondrians, these packages may not be necessary.
 
 Paul Heideman has created requirements.txt, which makes it easy to install the packages using 'pip install -r requirements.txt'.
 Dan Stowell pointed out that dvipng package is required in ubuntu to draw the Mondrians.
