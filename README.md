@@ -49,7 +49,10 @@ Copyright &copy; 2014 Balaji Lakshminarayanan
 
 - mondrianforest.py
 - mondrianforest_utils.py
+- mondrianforest_demo.py
 - utils.py
+
+I have added mondrianforest_demo.py which supports fit and partial_fit methods.
 
 Help on usage can be obtained by typing the following commands on the terminal:
 
@@ -57,19 +60,19 @@ Help on usage can be obtained by typing the following commands on the terminal:
 
 **Example usage**:
 
-./mondrianforest.py --dataset toy-mf --n_mondrians 100 --budget -1 --normalize_features 1
+./mondrianforest_demo.py --dataset toy-mf --n_mondrians 100 --budget -1 --normalize_features 1 --optype class
 
 **Examples that draw the Mondrian partition and Mondrian tree**:
 
-./mondrianforest.py --draw_mondrian 1 --save 1 --n_mondrians 10 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo
+./mondrianforest_demo.py --draw_mondrian 1 --save 1 --n_mondrians 10 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo --optype class
 
-./mondrianforest.py --draw_mondrian 1 --save 1 --n_mondrians 1 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo
+./mondrianforest_demo.py --draw_mondrian 1 --save 1 --n_mondrians 1 --dataset toy-mf --store_every 1 --n_mini 6 --tag demo --optype class
 
 **Example on a real-world dataset**:
 
 *assuming you have successfully run commands.sh in process_data folder*
 
-./mondrianforest.py --dataset satimage --n_mondrians 100 --budget -1 --normalize_features 1 --save 1 --data_path ../process_data/ --n_minibatches 10 --store_every 1
+./mondrianforest_demo.py --dataset satimage --n_mondrians 100 --budget -1 --normalize_features 1 --save 1 --data_path ../process_data/ --n_minibatches 10 --store_every 1 --optype class
 
 ----------------------------------------------------------------------------
 
@@ -77,7 +80,7 @@ I generated commands for parameter sweeps using 'build_cmds' script by Jan Gasth
 
 Some examples of parameter sweeps are:
 
-./build_cmds ./mondrianforest.py "--op_dir={results}" "--init_id=1:1:6" "--dataset={letter,satimage,usps,dna,dna-61-120}" "--n_mondrians={100}" "--save={1}"  "--discount_factor={10.0}" "--budget={-1}" "--n_minibatches={100}" "--bagging={0}" "--store_every={1}" "--normalize_features={1}" "--data_path={../process_data/}" >> run
+./build_cmds ./mondrianforest_demo.py "--op_dir={results}" "--init_id=1:1:6" "--dataset={letter,satimage,usps,dna,dna-61-120}" "--n_mondrians={100}" "--save={1}"  "--discount_factor={10.0}" "--budget={-1}" "--n_minibatches={100}" "--bagging={0}" "--store_every={1}" "--normalize_features={1}" "--data_path={../process_data/}" >> run
 
 Note that the results (predictions, accuracy, log predictive probability on training/test data, runtimes) are stored in the pickle files. 
 You need to write additional scripts to aggregate the results from these pickle files and generate the plots.
