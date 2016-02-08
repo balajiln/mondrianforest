@@ -1,4 +1,4 @@
-This folder contains the scripts used in the following paper:
+This folder contains the scripts used in the following papers:
 
 **Mondrian Forests: Efficient Online Random Forests**
 
@@ -6,7 +6,13 @@ Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh
 
 [http://arxiv.org/abs/1406.2673](http://arxiv.org/abs/1406.2673)
 
-Please cite the above paper if you use this code.
+**Mondrian Forests for Large-Scale Regression when Uncertainty Matters**
+
+Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh
+
+[http://arxiv.org/abs/1506.03805](http://arxiv.org/abs/1506.03805)
+
+Please cite the appropriate paper if you use this code.
 
 
 I ran my experiments using Enthought python (which includes all the necessary python packages).
