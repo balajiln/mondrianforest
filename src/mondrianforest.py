@@ -931,7 +931,11 @@ class MondrianTree(object):
             init_update_posterior_node_incremental(self, data, param, settings, cache, new_block, \
                     train_ids_new, node_id)      # counts of outer block are initialized with counts of current block
             if node_id.is_leaf:
-                raise Exception('a leaf should be expanded via grow call ... not here')
+                warn('\nWARNING: a leaf should not be expanded here; printing out some diagnostics')
+                print 'node_id = %s, is_leaf = %s, max_split_cost = %s, split_cost = %s' \
+                        % (node_id, node_id.is_leaf, self.max_split_costs[node_id], split_cost)
+                print 'counts = %s\nmin_d = \n%s\nmax_d = \n%s' % (self.counts[node_id], node_id.min_d, node_id.max_d)
+                raise Exception('a leaf should be expanded via grow call; see diagnostics above')
             if settings.debug:
                 print 'looks like cut possible'
             # there is a cut outside the extent of the current block
