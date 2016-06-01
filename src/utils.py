@@ -164,14 +164,14 @@ def assert_no_nan(mat, name='matrix'):
 
 def check_if_one(val):
     try:
-        assert(np.abs(val - 1) < 1e-12)
+        assert(np.abs(val - 1) < 1e-9)
     except AssertionError:
         print 'val = %s (needs to be equal to 1)' % val
         raise AssertionError
 
 def check_if_zero(val):
     try:
-        assert(np.abs(val) < 1e-10)
+        assert(np.abs(val) < 1e-9)
     except AssertionError:
         print 'val = %s (needs to be equal to 0)' % val
         raise AssertionError
