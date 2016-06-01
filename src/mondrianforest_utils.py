@@ -133,7 +133,7 @@ def parser_add_common_options():
     parser.add_option('--normalize_features', dest='normalize_features', default=1, type='int',
             help='do you want to normalize features in 0-1 range? (0=False, 1=True) [default: %default]')
     parser.add_option('--select_features', dest='select_features', default=0, type='int',
-            help='do you wish to apply feature selection? (1=True, 0=False) [default: %default]') 
+            help='do you wish to apply feature selection? (1=True, 0=False) (supported only for regression) [default: %default]') 
     parser.add_option('--optype', dest='optype', default='class',
             help='nature of outputs in your dataset (class/real) '\
             'for (classification/regression)  [default: %default]')
@@ -144,8 +144,7 @@ def parser_add_common_options():
     parser.add_option('--op_dir', dest='op_dir', default='results', 
             help='output directory for pickle files (NOTE: make sure directory exists) [default: %default]')
     parser.add_option('--tag', dest='tag', default='', 
-            help='additional tag to identify results from a particular run [default: %default]' \
-                    ' tag=donottest reduces test time drastically (useful for profiling training time)')
+            help='additional tag to identify results from a particular run [default: %default]')
     parser.add_option('--save', dest='save', default=0, type='int',
             help='do you wish to save the results? (1=True, 0=False) [default: %default]') 
     parser.add_option('-v', '--verbose',dest='verbose', default=1, type='int',
@@ -193,7 +192,7 @@ def parser_check_common_options(parser, settings):
 def parser_check_mf_options(parser, settings):
     fail(parser, settings.n_mondrians < 1, 'number of mondrians needs to be >= 1')
     fail(parser, settings.discount_factor <= 0, 'discount_factor needs to be > 0')
-    fail(parser, not(settings.budget == -1 or settings.budget > 0), 'budget needs to be > 0 or -1 (treated as INF)')
+    fail(parser, not(settings.budget == -1), 'budget needs to be -1 (treated as INF); control complexity through min_samples_split if reqd')
     fail(parser, settings.n_minibatches < 1, 'number of minibatches needs to be >= 1')
     fail(parser, not(settings.draw_mondrian==0 or settings.draw_mondrian==1), 'draw_mondrian needs to be 0/1')
     fail(parser, not(settings.store_every==0 or settings.store_every==1), 'store_every needs to be 0/1')
@@ -219,7 +218,7 @@ def reset_random_seed(settings):
 
 
 def check_dataset(settings):
-    classification_datasets = set(['satimage', 'usps', 'dna', 'dna-61-120', 'letter'])
+    classification_datasets = set(['satimage', 'usps', 'dna', 'dna-61-120', 'letter', 'mnist'])
     regression_datasets = set(['housing', 'kin40k'])
     special_cases = settings.dataset[:3] == 'toy' or settings.dataset[:4] == 'rsyn' \
             or settings.dataset[:8] == 'ctslices' or settings.dataset[:3] == 'msd' \
@@ -234,9 +233,9 @@ def check_dataset(settings):
             else:
                 assert(settings.dataset in regression_datasets)
         except AssertionError:
-            print 'Invalid dataset for optype; dataset = %s, optype = %s' % \
+            print 'Unrecognized dataset for optype; dataset = %s, optype = %s' % \
                     (settings.dataset, settings.optype)
-            raise AssertionError
+            #raise AssertionError
     return special_cases
 
 
@@ -285,6 +284,8 @@ def load_data(settings):
     if settings.select_features:
         if settings.optype == 'real':
             scores, _ = feature_selection.f_regression(data['x_train'], data['y_train'])
+        else:
+            raise Exception('select_features currently supported only for regression')
         scores[np.isnan(scores)] = 0.   # FIXME: setting nan scores to 0. Better alternative?
         scores_sorted, idx_sorted = np.sort(scores), np.argsort(scores)
         flag_relevant = scores_sorted > (scores_sorted[-1] * 0.05)  # FIXME: better way to set threshold? 

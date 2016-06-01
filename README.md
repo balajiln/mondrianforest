@@ -4,13 +4,17 @@ This folder contains the scripts used in the following papers:
 
 Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh
 
-[http://arxiv.org/abs/1406.2673](http://arxiv.org/abs/1406.2673)
+*Advances in Neural Information Processing Systems (NIPS), 2014.*
+
+[Link to PDF](http://www.gatsby.ucl.ac.uk/~balaji/mondrian_forests_nips14.pdf)
 
 **Mondrian Forests for Large-Scale Regression when Uncertainty Matters**
 
 Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh
 
-[http://arxiv.org/abs/1506.03805](http://arxiv.org/abs/1506.03805)
+*Proceedings of AISTATS, 2016.*
+
+[Link to PDF](http://www.gatsby.ucl.ac.uk/~balaji/mfregression_aistats16.pdf)
 
 Please cite the appropriate paper if you use this code.
 

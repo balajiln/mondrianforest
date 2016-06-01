@@ -399,7 +399,11 @@ class MondrianTree(object):
         - optype == real: pause if n_points < min_samples_split
         """
         if settings.optype == 'class':
-            pause_mondrian_tmp = self.check_if_labels_same(node_id)
+            #pause_mondrian_tmp = self.check_if_labels_same(node_id)
+            if self.check_if_labels_same(node_id):
+                pause_mondrian_tmp = True
+            else:
+                pause_mondrian_tmp = (np.sum(self.counts[node_id]) < settings.min_samples_split)
         else:
             pause_mondrian_tmp = self.n_points[node_id] < settings.min_samples_split
         pause_mondrian = pause_mondrian_tmp or (node_id.sum_range_d == 0)
@@ -656,6 +660,8 @@ class MondrianTree(object):
                 discount_per_num_customers = discount / num_customers
                 pred_prob_tmp = num_tables * discount_per_num_customers[:, np.newaxis] * base \
                         + self.cnt[node_id] / num_customers - discount_per_num_customers[:, np.newaxis] * num_tables_k
+                if settings.debug:
+                    check_if_one(np.sum(pred_prob_tmp))
                 pred_prob[idx_test_non_zero, :] += prob_separated_now[idx_non_zero][:, np.newaxis] \
                                             * prob_not_separated_yet[idx_test_non_zero][:, np.newaxis] * pred_prob_tmp
                 prob_not_separated_yet[idx_test] *= prob_not_separated_now
@@ -839,7 +845,7 @@ class MondrianTree(object):
                 assert math.isinf(node_id.budget)
             if settings.optype == 'class':
                 num_data_points += self.counts[node_id].sum()
-                assert np.count_nonzero(self.counts[node_id]) == 1
+                assert (np.count_nonzero(self.counts[node_id]) == 1) or (np.sum(self.counts[node_id]) < settings.min_samples_split)
                 assert self.pause_mondrian(node_id, settings)
             if node_id != self.root:
                 assert np.all(node_id.min_d >= node_id.parent.min_d)
@@ -881,20 +887,27 @@ class MondrianTree(object):
         if self.pause_mondrian(node_id, settings):
             assert node_id.is_leaf
             split_cost = np.inf
+            n_points_new = len(data['y_train'][train_ids_new])
+            # FIXME: node_id.sum_range_d not tested
             if settings.optype == 'class':
                 y_unique = np.unique(data['y_train'][train_ids_new])
-                # FIXME: node_id.sum_range_d not tested
-                unpause_paused_mondrian = not( (len(y_unique) == 1) and (self.counts[node_id][y_unique] > 0) )
+                # unpause only if more than one unique label and number of points >= min_samples_split
+                is_pure_leaf = (len(y_unique) == 1) and (self.counts[node_id][y_unique] > 0) \
+                                and self.check_if_labels_same(node_id)
+                if is_pure_leaf:
+                    unpause_paused_mondrian = False
+                else:
+                    unpause_paused_mondrian = \
+                            ((n_points_new + np.sum(self.counts[node_id])) >= settings.min_samples_split)
             else:
-                n_points_new = len(data['y_train'][train_ids_new])
                 unpause_paused_mondrian = \
                         not( (n_points_new + self.n_points[node_id]) < settings.min_samples_split )
-                        # node_id.sum_range_d not tested
             if settings.debug:
                 print 'trying to extend a paused Mondrian; is_leaf = %s, node_id = %s' % (node_id.is_leaf, node_id)
                 if settings.optype == 'class':
-                    print 'y_unique = %s, counts = %s, split_cost = %s, max_split_costs = %s' % \
-                        (y_unique, self.counts[node_id], split_cost, self.max_split_costs[node_id])
+                    print 'y_unique (new) = %s, n_points_new = %s, counts = %s, split_cost = %s, max_split_costs = %s' % \
+                        (y_unique, n_points_new, self.counts[node_id], split_cost, self.max_split_costs[node_id])
+                    print 'unpause_paused_mondrian = %s, is_pure_leaf = %s' % (unpause_paused_mondrian, is_pure_leaf)
         if split_cost >= self.max_split_costs[node_id]:
             # take root form of node_id (no cut outside the extent of the current block)
             if not node_id.is_leaf:
@@ -931,7 +944,11 @@ class MondrianTree(object):
             init_update_posterior_node_incremental(self, data, param, settings, cache, new_block, \
                     train_ids_new, node_id)      # counts of outer block are initialized with counts of current block
             if node_id.is_leaf:
-                raise Exception('a leaf should be expanded via grow call ... not here')
+                warn('\nWARNING: a leaf should not be expanded here; printing out some diagnostics')
+                print 'node_id = %s, is_leaf = %s, max_split_cost = %s, split_cost = %s' \
+                        % (node_id, node_id.is_leaf, self.max_split_costs[node_id], split_cost)
+                print 'counts = %s\nmin_d = \n%s\nmax_d = \n%s' % (self.counts[node_id], node_id.min_d, node_id.max_d)
+                raise Exception('a leaf should be expanded via grow call; see diagnostics above')
             if settings.debug:
                 print 'looks like cut possible'
             # there is a cut outside the extent of the current block
@@ -1046,6 +1063,7 @@ class MondrianTree(object):
             if settings.debug and False:
                 print 'node_id = %20s, is_leaf = %5s, discount = %.2f, cnt = %s, base = %s, pred_prob = %s' \
                         % (self.node_ids_print[node_id], node_id.is_leaf, discount, cnt, base, self.pred_prob[node_id])
+                check_if_one(np.sum(self.pred_prob[node_id]))
 
     def get_variance_node(self, node_id, param, settings):
         # the non-linear transformation should be a monotonically non-decreasing function
